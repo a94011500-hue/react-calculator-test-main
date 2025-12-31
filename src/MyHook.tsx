@@ -23,10 +23,30 @@ export const MyHook: React.FC = () => {
       <h3>Fruit List</h3>
       <button className="p-4 border rounded" onClick={() => {
         setCount(count+3);
-        alert(count);
+        
       }}>
       Count is: {count}
     </button>
+
+    <button className="p-4 border rounded" onClick={() => {
+      setCount(count-1)
+      
+      }}>
+    </button>
+
+    <button className="p-4 border rounded" onClick={() => {
+      setCount(count * 2)
+
+      }}>
+    
+     </button>
+
+     <button className="p-4 border rounded" onClick={() => {
+      setCount(count / 2);
+
+      }}>
+
+      </button>
     </div>
   );
 };

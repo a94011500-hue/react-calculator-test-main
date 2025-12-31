@@ -20,6 +20,7 @@ export const MyView: React.FC = () => {
 
   return (
   <div className="p-4 border rounded">
+    
       <h3>Fruit List</h3>
       <ul>
 

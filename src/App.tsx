@@ -21,6 +21,18 @@ function App() {
   const [input2, setInput2] = useState("");
   const [ans, setAns] = useState(0);
   
+const calculate = () => {
+  const n1 = parseFloat(input1);
+  const n2 = parseFloat(input2);
+  let result = n1;
+
+  if (op === "+") result = n1 + n2;
+  else if (op === "−") result = n1 - n2;
+  else if (op === "×") result = n1 * n2;
+  else if (op === "÷") result = n1 / n2;
+
+  return result;
+};
 
   const signList = [
     '%', 'CE', 'C', '⌫', // ⌫ 代表退格/刪除鍵 (Backspace)
@@ -36,30 +48,123 @@ function App() {
   };
 
   const handleCalc = (sign: string)=> {
+    
+    if (sign === "%") {
+      if (op && input1 && input2) {
+        const n1 = parseFloat(input1);
+        const n2 = parseFloat(input2);
+        const percentValue = (n1 * n2) / 100; 
+        setInput2(percentValue.toString());
+      } else if (!op && input1) {
+        const n1 = parseFloat(input1) / 100;
+        setInput1(n1.toString());
+      }
+      return;
+    }
+
+    if (sign === "C") {
+      setInput1("");
+      setInput2("");
+      setOp("");
+      setAns(0);
+      setEq(false);
+      return;
+    }
+
+    if (sign === "CE") {
+      if (op) {
+        setInput2("");
+      } else {
+        setInput1("");
+      }
+      return;
+    }
+
+    if (sign === "⌫") {
+      if (op) {
+        setInput2(input2.slice(0, -1));
+      } else {
+        setInput1(input1.slice(0, -1));
+      }
+      return;
+    }
+
+    if (sign === "1/x" || sign === "x²" || sign === "²√x") {
+      const currentStr = op ? input2 : input1;
+      const num = parseFloat(currentStr || "0");
+      let result = 0;
+
+      if (sign === "1/x") result = num !== 0 ? 1 / num : 0;
+      else if (sign === "x²") result = num * num;
+      else if (sign === "²√x") result = Math.sqrt(num);
+
+      if (op) setInput2(result.toString());
+      else setInput1(result.toString());
+      return;
+    }
+
     if (isNum(sign)) {
-      if(op) {
+      if (eq) {
+        setInput1(sign);
+        setEq(false);
+      }else if(op) {
         setInput2(input2 + sign);
       } else {
         setInput1(input1 + sign);
       }
       return;
     }
-    if("+" === sign){
+
+    if("+" === sign || "−" === sign || sign === "×" || sign === "÷"){
+      
+      if (input1 && op && input2) {
+        const result = calculate();
+        setInput1(result.toString());
+        setInput2("");
+      }
       setOp(sign);
+      setEq(false);
+      return;
+    }
+
+    if (sign === ".") {
+      const get = op ? input2 : input1;
+      if (get.includes(".")) return;
+
+      const val = get || "0";
+      op ? setInput2(val + ".") : setInput1(val + ".");
+      return;
+    }
+
+    if (sign === "±") {
+      const setInput = op ? setInput2 : setInput1;
+      const current = op ? input2 : input1;
+      if (current && current !== "0") {
+        setInput((parseFloat(current) * -1).toString());
+      }
       return;
     }
 
     if("=" === sign){
       if("+" === op){
-        setAns(parseFloat(input1) +parseFloat(input2) );
+        setAns(parseFloat(input1) + parseFloat(input2) );
         setEq(true);
-      }
+      }else if ("−" === op) {
+        setAns(parseFloat(input1) - parseFloat(input2));
+        setEq(true);  
+      }else if ("×" === op) {
+        setAns(parseFloat(input1) * parseFloat(input2));
+        setEq(true); 
+      }else if ("÷" === op) {
+        setAns(parseFloat(input1) / parseFloat(input2));
+        setEq(true); 
      }
+    }
   };
 
   const getDisplayText = () => {
     if(eq){
-      return ans+"";
+      return ans + "";
     }
     if(op){
       return input2;
